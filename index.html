@@ -282,9 +282,14 @@ color: purple;
   </style>
 </head>
   <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      // Проверка обновлений каждые 5 секунд
+      setInterval(() => {
+        reg.update();
+      }, 5000);
+    });
+  }
 </script>
 <body>
   <!-- Меню -->
