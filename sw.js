@@ -1,4 +1,4 @@
-const cacheName = 'site-v2'; // Увеличивай версию при обновлениях
+const cacheName = 'autoupdate-v1';
 const assetsToCache = [
   '/',
   '/index.html',
@@ -14,10 +14,10 @@ self.addEventListener('install', event => {
       return cache.addAll(assetsToCache);
     })
   );
-  self.skipWaiting();
+  self.skipWaiting(); // сразу активировать
 });
 
-// Активация: очищаем старый кэш
+// Активация: удаляем старый кэш
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -31,20 +31,17 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Запросы: сначала из интернета, если нет — из кэша
+// Загрузка: сначала онлайн, если нет — из кэша
 self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Обновляем кэш
-        const clone = response.clone();
+        const resClone = response.clone();
         caches.open(cacheName).then(cache => {
-          cache.put(event.request, clone);
+          cache.put(event.request, resClone);
         });
         return response;
       })
-      .catch(() => {
-        return caches.match(event.request);
-      })
+      .catch(() => caches.match(event.request))
   );
 });
