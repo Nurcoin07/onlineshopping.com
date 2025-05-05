@@ -1,4 +1,4 @@
-const cacheName = 'site-v1'; // Увеличивай версию при обновлениях
+const cacheName = 'site-v2'; // Увеличивай версию при обновлениях
 const assetsToCache = [
   '/',
   '/index.html',
