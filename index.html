@@ -282,11 +282,9 @@ color: purple;
   </style>
 </head>
   <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js").then(() => {
-      console.log("Service Worker зарегистрирован");
-    });
-  }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
 </script>
 <body>
   <!-- Меню -->
