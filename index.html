@@ -283,11 +283,21 @@ color: purple;
 </head>
   <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
-      // Проверка обновлений каждые 5 секунд
+    navigator.serviceWorker.register('/sw.js').then((reg) => {
+      // Проверка новых версий каждые 30 секунд
       setInterval(() => {
         reg.update();
-      }, 5000);
+      }, 30000);
+
+      reg.onupdatefound = () => {
+        const newWorker = reg.installing;
+        newWorker.onstatechange = () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log("Новая версия готова, перезагружаем...");
+            window.location.reload();
+          }
+        };
+      };
     });
   }
 </script>
