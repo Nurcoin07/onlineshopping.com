@@ -1,4 +1,4 @@
-const cacheName = 'autoupdate-v2';
+const cacheName = 'autoupdate-v4';
 const assetsToCache = [
   '/',
   '/index.html',
