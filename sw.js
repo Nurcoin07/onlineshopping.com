@@ -1,46 +1,46 @@
-const cacheName = 'autoupdate-v4';
-const assetsToCache = [
+const cacheName = 'site-cache';
+const filesToCache = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icon-192.png',
-  '/icon-512.png'
+  '/icon-512.png',
 ];
 
-// Установка: кэшируем нужные файлы
-self.addEventListener('install', event => {
+// Установка
+self.addEventListener('install', (event) => {
+  self.skipWaiting(); // активирует сразу
   event.waitUntil(
-    caches.open(cacheName).then(cache => {
-      return cache.addAll(assetsToCache);
-    })
+    caches.open(cacheName).then((cache) => cache.addAll(filesToCache))
   );
-  self.skipWaiting(); // сразу активировать
 });
 
-// Активация: удаляем старый кэш
-self.addEventListener('activate', event => {
+// Активация
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
+    caches.keys().then((keyList) =>
       Promise.all(
-        keys.map(key => {
-          if (key !== cacheName) return caches.delete(key);
+        keyList.map((key) => {
+          if (key !== cacheName) {
+            return caches.delete(key);
+          }
         })
       )
     )
   );
-  self.clients.claim();
+  return self.clients.claim();
 });
 
-// Загрузка: сначала онлайн, если нет — из кэша
-self.addEventListener('fetch', event => {
+// Запросы: всегда пробует интернет, если нет — кэш
+self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
-      .then(response => {
-        const resClone = response.clone();
-        caches.open(cacheName).then(cache => {
-          cache.put(event.request, resClone);
+      .then((response) => {
+        // Кэшируем заново
+        return caches.open(cacheName).then((cache) => {
+          cache.put(event.request, response.clone());
+          return response;
         });
-        return response;
       })
       .catch(() => caches.match(event.request))
   );
